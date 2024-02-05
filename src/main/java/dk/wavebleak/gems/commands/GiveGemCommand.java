@@ -13,8 +13,7 @@ import org.bukkit.inventory.ItemStack;
 public class GiveGemCommand implements CommandExecutor{
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
-
-        if(!(args.length >= 1)) {
+        if(args.length == 0) {
             GemType[] gems = GemType.values();
 
             StringBuilder sb = new StringBuilder();
@@ -26,6 +25,7 @@ public class GiveGemCommand implements CommandExecutor{
             String gemList = sb.substring(0, sb.length() - 1);
 
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cCorrect usage: /givegem <" + gemList + "> [Integer: amount]"));
+            return false;
         }
 
         int amount = 1;
