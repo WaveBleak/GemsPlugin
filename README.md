@@ -16,6 +16,11 @@ If you rightclick with the Strength Gem while the cooldown is over, you get a hu
 ### Void Gem
 If you rightclcik with the Void Gem while facing a wall, you will go through the wall, this requires that it's a thin wall though
 
+## TODO
+- Add a natural way of obtaining gems
+- Give gems some sort of durability or at least make them unable to last forever
+- Add more gems
+
 ## Build requirements 
 - To build the plugin you must port [this](https://github.com/hmzel/ParticleSFX/tree/master) plugin to 1.20.4
 - Requires Java 17+
