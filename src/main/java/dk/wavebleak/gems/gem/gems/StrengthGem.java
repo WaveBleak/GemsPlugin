@@ -28,6 +28,10 @@ public class StrengthGem extends Gem {
     public GemType gemType() {
         return GemType.STRENGTH;
     }
+    @Override
+    public Material itemType() {
+        return Material.LEATHER;
+    }
 
     @Override
     public String name() {
@@ -43,7 +47,7 @@ public class StrengthGem extends Gem {
     @Override
     public void onRightClick(Player player) {
         if(cooldown > 0) {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You must wait " + TickUtils.ticksToSeconds(cooldown) + " seconds!"));
+            sendCooldownMessage(player, cooldown);
             return;
         }
         cooldown = 200;

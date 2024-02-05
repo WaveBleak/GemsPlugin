@@ -8,6 +8,7 @@ import hm.zelha.particlesfx.shapers.ParticleLineCurved;
 import hm.zelha.particlesfx.util.LocationSafe;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +28,11 @@ public class ShadowGem extends Gem {
     @Override
     public String name() {
         return "&8&lShadow gem";
+    }
+
+    @Override
+    public Material itemType() {
+        return Material.GHAST_TEAR;
     }
 
 

@@ -21,6 +21,18 @@ If you right click with the Strength Gem while the cool down is over, you get a 
 ### Void Gem
 If you right click with the Void Gem while facing a wall, you will go through the wall, this requires that it's a thin wall though
 
+### Wealth Gem
+If you hold the Wealth Gem in your offhand while mining, it will increase your fortune
+
+### Warden Gem
+Right click with the Warden Gem you will shoot out a beam that explodes on impact with monsters, players and blocks
+
+### Ice Gem
+When you hit someone while having the Ice Gem, it will freeze them but also give you slowness
+
+### Force Gem
+When you right click with the force gem it throws everyone around you into the air except you
+
 
 ## TODO
 - Add a natural way of obtaining gems

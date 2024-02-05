@@ -12,10 +12,7 @@ import hm.zelha.particlesfx.util.CircleInfo;
 import hm.zelha.particlesfx.util.LocationSafe;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -32,6 +29,11 @@ public class PuffGem extends Gem {
     }
 
     @Override
+    public Material itemType() {
+        return Material.WHITE_WOOL;
+    }
+
+    @Override
     public String name() {
         return "&f&lPuff Gem";
     }
@@ -44,7 +46,7 @@ public class PuffGem extends Gem {
     @Override
     public void onRightClick(Player player) {
         if (cooldown > 0) {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You must wait " + TickUtils.ticksToSeconds(cooldown) + " seconds!"));
+            sendCooldownMessage(player, cooldown);
             return;
         }
         cooldown = 300;

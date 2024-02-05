@@ -1,10 +1,14 @@
 package dk.wavebleak.gems.gem;
 
+import dk.wavebleak.gems.utils.TickUtils;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -14,7 +18,7 @@ import java.util.List;
 
 public abstract class Gem implements IGem {
     public ItemStack getAsItem() {
-        ItemStack item = new ItemStack(Material.NETHER_STAR);
+        ItemStack item = new ItemStack(itemType());
         ItemMeta meta = item.getItemMeta();
 
         if(meta == null) return new ItemStack(Material.STONE);
@@ -47,6 +51,14 @@ public abstract class Gem implements IGem {
 
     public void onAttack(Player player, LivingEntity victim) {
 
+    }
+
+    public void onBreak(BlockBreakEvent event) {
+
+    }
+
+    protected void sendCooldownMessage(Player player, int cooldown) {
+        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You must wait " + TickUtils.ticksToSeconds(cooldown) + " seconds!"));
     }
 
 }

@@ -34,6 +34,10 @@ public class VoidGem extends Gem {
     public GemType gemType() {
         return GemType.VOID;
     }
+    @Override
+    public Material itemType() {
+        return Material.IRON_HORSE_ARMOR;
+    }
 
     @Override
     public String name() {
@@ -48,7 +52,7 @@ public class VoidGem extends Gem {
     @Override
     public void onRightClick(Player player) {
         if (cooldown > 0) {
-            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You must wait " + TickUtils.ticksToSeconds(cooldown) + " seconds!"));
+            sendCooldownMessage(player, cooldown);
             return;
         }
         Location loc = player.getEyeLocation();

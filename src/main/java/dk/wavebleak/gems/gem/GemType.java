@@ -4,5 +4,9 @@ public enum GemType {
     PUFF,
     SHADOW,
     STRENGTH,
-    VOID
+    VOID,
+    WEALTH,
+    FORCE,
+    ICE,
+    WARDEN
 }

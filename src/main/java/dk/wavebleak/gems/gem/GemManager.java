@@ -9,6 +9,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -47,6 +49,9 @@ public class GemManager implements Listener {
                             if(gemItem.getItemMeta() == null) {
                                 return false;
                             }
+                            if(!gemItem.getType().equals(item.getType())) {
+                                return false;
+                            }
                             return gemItem.getItemMeta().getCustomModelData() == item.getItemMeta().getCustomModelData();
                         }).findFirst().ifPresent(gem -> {
                             gem.onTick(player);
@@ -70,6 +75,54 @@ public class GemManager implements Listener {
         }
     }
 
+    @EventHandler
+    public void onPlace(BlockPlaceEvent event) {
+        ItemStack itemInHand = event.getItemInHand();
+
+        gems.stream().filter(x -> {
+            ItemStack gemItem = x.getAsItem();
+            if(gemItem.getItemMeta() == null) {
+                return false;
+            }
+            if(!gemItem.getType().equals(itemInHand.getType())) {
+                return false;
+            }
+            return gemItem.getItemMeta().getCustomModelData() == itemInHand.getItemMeta().getCustomModelData();
+        }).findFirst().ifPresent(gem -> {
+            event.setCancelled(true);
+        });
+    }
+
+
+    @EventHandler
+    public void onBreak(BlockBreakEvent event) {
+        for(ItemStack item : event.getPlayer().getInventory()) {
+            if(item == null) {
+                continue;
+            }
+            if(item.getItemMeta() == null) {
+                continue;
+            }
+            if(!item.getItemMeta().hasCustomModelData()) {
+                continue;
+            }
+            gems.stream().filter(x -> {
+                ItemStack gemItem = x.getAsItem();
+                if(gemItem.getItemMeta() == null) {
+                    return false;
+                }
+                if(!gemItem.getType().equals(item.getType())) {
+                    return false;
+                }
+                return gemItem.getItemMeta().getCustomModelData() == item.getItemMeta().getCustomModelData();
+            }).findFirst().ifPresent(gem -> {
+                gem.onBreak(event);
+            });
+        }
+    }
+
+
+
 
     @EventHandler
     public void onAttack(EntityDamageByEntityEvent event) {
@@ -89,6 +142,9 @@ public class GemManager implements Listener {
             gems.stream().filter(x -> {
                 ItemStack gemItem = x.getAsItem();
                 if(gemItem.getItemMeta() == null) {
+                    return false;
+                }
+                if(!gemItem.getType().equals(item.getType())) {
                     return false;
                 }
                 return gemItem.getItemMeta().getCustomModelData() == item.getItemMeta().getCustomModelData();
@@ -116,7 +172,10 @@ public class GemManager implements Listener {
                         return false;
                     }
                     return x.getAsItem().getItemMeta().getCustomModelData() == item.getItemMeta().getCustomModelData();
-                }).findFirst().ifPresent(gem -> gem.onRightClick(event.getPlayer()));
+                }).findFirst().ifPresent(gem -> {
+                    event.setCancelled(true);
+                    gem.onRightClick(event.getPlayer());
+                });
 
             }
         }
