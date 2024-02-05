@@ -6,7 +6,7 @@ https://github.com/WaveBleak/GemsPlugin/assets/43072434/b9f74cbc-3143-47d9-a15a-
 
 
 ## The Gems
-Currently there's 4 gems, each with it's own usecase
+Currently there's 4 gems, each with it's own usecase, to give yourself a gem just use the `/givegem` command and follow the instructions! 
 ### Puff Gem
 The Puff Gem lets you get boosted into the sky to disengage combat or just for quick movement
 ### Shadow Gem
