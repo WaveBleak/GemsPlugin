@@ -1,14 +1,10 @@
 package dk.wavebleak.gems.gem.gems;
 
 import dk.wavebleak.gems.Gems;
-import dk.wavebleak.gems.gem.Gem;
 import dk.wavebleak.gems.gem.GemType;
-import dk.wavebleak.gems.utils.TickUtils;
+import dk.wavebleak.gems.gem.GemWithCooldown;
 import hm.zelha.particlesfx.particles.ParticleDustColored;
 import hm.zelha.particlesfx.shapers.ParticleCircle;
-import hm.zelha.particlesfx.shapers.ParticleCylinder;
-import hm.zelha.particlesfx.shapers.ParticleLine;
-import hm.zelha.particlesfx.util.CircleInfo;
 import hm.zelha.particlesfx.util.Color;
 import hm.zelha.particlesfx.util.LocationSafe;
 import net.md_5.bungee.api.ChatMessageType;
@@ -17,19 +13,18 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-import org.checkerframework.checker.units.qual.C;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class VoidGem extends Gem {
+public class VoidGem extends GemWithCooldown {
+    public VoidGem() {
+        super(100);
+    }
 
-    private int cooldown = 0;
     @Override
     public GemType gemType() {
         return GemType.VOID;
@@ -51,8 +46,8 @@ public class VoidGem extends Gem {
 
     @Override
     public void onRightClick(Player player) {
-        if (cooldown > 0) {
-            sendCooldownMessage(player, cooldown);
+        if(checkCooldown()) {
+            sendCooldownMessage(player);
             return;
         }
         Location loc = player.getEyeLocation();
@@ -88,7 +83,7 @@ public class VoidGem extends Gem {
         if(!hasTeleported) {
             player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "Couldn't reach the other side"));
         } else {
-            cooldown = 100;
+            cooldown = maxCooldown;
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1, 0.1f);
 
             Location start = finalLoc.clone().add(0, 0.33, 0);
@@ -123,13 +118,6 @@ public class VoidGem extends Gem {
                     }
                 }
             }.runTaskLater(Gems.instance, 10);
-        }
-    }
-
-    @Override
-    public void onTick(Player player) {
-        if(cooldown > 0) {
-            cooldown--;
         }
     }
 }

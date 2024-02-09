@@ -57,8 +57,5 @@ public abstract class Gem implements IGem {
 
     }
 
-    protected void sendCooldownMessage(Player player, int cooldown) {
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(ChatColor.RED + "You must wait " + TickUtils.ticksToSeconds(cooldown) + " seconds!"));
-    }
 
 }

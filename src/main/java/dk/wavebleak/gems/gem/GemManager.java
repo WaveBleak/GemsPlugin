@@ -1,9 +1,6 @@
 package dk.wavebleak.gems.gem;
 
 import dk.wavebleak.gems.Gems;
-import dk.wavebleak.gems.gem.gems.PuffGem;
-import dk.wavebleak.gems.gem.gems.ShadowGem;
-import dk.wavebleak.gems.gem.gems.StrengthGem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -12,15 +9,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.reflections.Reflections;
 
-import java.io.File;
-import java.net.URL;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
+@SuppressWarnings("deprecation")
 public class GemManager implements Listener {
 
     public static List<Gem> gems = new ArrayList<>();
@@ -34,29 +34,11 @@ public class GemManager implements Listener {
             @Override
             public void run() {
                 for(Player player : Bukkit.getOnlinePlayers()) {
-                    for(ItemStack item : player.getInventory()) {
-                        if(item == null) {
-                            continue;
-                        }
-                        if(item.getItemMeta() == null) {
-                            continue;
-                        }
-                        if(!item.getItemMeta().hasCustomModelData()) {
-                            continue;
-                        }
-                        gems.stream().filter(x -> {
-                            ItemStack gemItem = x.getAsItem();
-                            if(gemItem.getItemMeta() == null) {
-                                return false;
-                            }
-                            if(!gemItem.getType().equals(item.getType())) {
-                                return false;
-                            }
-                            return gemItem.getItemMeta().getCustomModelData() == item.getItemMeta().getCustomModelData();
-                        }).findFirst().ifPresent(gem -> {
-                            gem.onTick(player);
-                        });
-                    }
+                    GemRunnable runnable = (gem) -> {
+                        gem.onTick(player);
+                    };
+
+                    executePerGem(player.getInventory(), runnable);
                 }
             }
         }.runTaskTimer(Gems.instance, 1, 1);
@@ -76,49 +58,43 @@ public class GemManager implements Listener {
     }
 
     @EventHandler
+    public void onPickup(EntityPickupItemEvent event) {
+        if(!(event.getEntity() instanceof Player player)) return;
+
+        AtomicInteger currentGemsInInventory = new AtomicInteger();
+        final int maxGemsInInventory = 1;
+
+        GemRunnable runnable = (gem) -> {
+            currentGemsInInventory.getAndIncrement();
+        };
+
+        executePerGem(player.getInventory(), runnable);
+
+        if(currentGemsInInventory.get() >= maxGemsInInventory) {
+            event.setCancelled(isGem(event.getItem().getItemStack()));
+        }
+    }
+
+    @EventHandler
     public void onPlace(BlockPlaceEvent event) {
         ItemStack itemInHand = event.getItemInHand();
 
-        gems.stream().filter(x -> {
-            ItemStack gemItem = x.getAsItem();
-            if(gemItem.getItemMeta() == null) {
-                return false;
-            }
-            if(!gemItem.getType().equals(itemInHand.getType())) {
-                return false;
-            }
-            return gemItem.getItemMeta().getCustomModelData() == itemInHand.getItemMeta().getCustomModelData();
-        }).findFirst().ifPresent(gem -> {
+        GemRunnable runnable = (gem) -> {
             event.setCancelled(true);
-        });
+        };
+
+        executeIfGem(itemInHand, runnable);
     }
 
 
     @EventHandler
     public void onBreak(BlockBreakEvent event) {
-        for(ItemStack item : event.getPlayer().getInventory()) {
-            if(item == null) {
-                continue;
-            }
-            if(item.getItemMeta() == null) {
-                continue;
-            }
-            if(!item.getItemMeta().hasCustomModelData()) {
-                continue;
-            }
-            gems.stream().filter(x -> {
-                ItemStack gemItem = x.getAsItem();
-                if(gemItem.getItemMeta() == null) {
-                    return false;
-                }
-                if(!gemItem.getType().equals(item.getType())) {
-                    return false;
-                }
-                return gemItem.getItemMeta().getCustomModelData() == item.getItemMeta().getCustomModelData();
-            }).findFirst().ifPresent(gem -> {
-                gem.onBreak(event);
-            });
-        }
+
+        GemRunnable runnable = (gem) -> {
+            gem.onBreak(event);
+        };
+
+        executePerGem(event.getPlayer().getInventory(), runnable);
     }
 
 
@@ -129,29 +105,11 @@ public class GemManager implements Listener {
         if(!(event.getDamager() instanceof Player attacker)) return;
         if(!(event.getEntity() instanceof LivingEntity victim)) return;
 
-        for(ItemStack item : attacker.getInventory()) {
-            if(item == null) {
-                continue;
-            }
-            if(item.getItemMeta() == null) {
-                continue;
-            }
-            if(!item.getItemMeta().hasCustomModelData()) {
-                continue;
-            }
-            gems.stream().filter(x -> {
-                ItemStack gemItem = x.getAsItem();
-                if(gemItem.getItemMeta() == null) {
-                    return false;
-                }
-                if(!gemItem.getType().equals(item.getType())) {
-                    return false;
-                }
-                return gemItem.getItemMeta().getCustomModelData() == item.getItemMeta().getCustomModelData();
-            }).findFirst().ifPresent(gem -> {
-                gem.onAttack(attacker, victim);
-            });
-        }
+        GemRunnable runnable = (gem) -> {
+            gem.onAttack(attacker, victim);
+        };
+
+        executePerGem(attacker.getInventory(), runnable);
     }
 
 
@@ -160,25 +118,50 @@ public class GemManager implements Listener {
         switch (event.getAction()) {
             case RIGHT_CLICK_AIR, RIGHT_CLICK_BLOCK -> {
                 ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
-                if(item.getItemMeta() == null) {
-                    return;
-                }
-                if(!item.getItemMeta().hasCustomModelData()) {
-                    return;
-                }
 
-                gems.stream().filter(x -> {
-                    if(x.getAsItem().getItemMeta() == null) {
-                        return false;
-                    }
-                    return x.getAsItem().getItemMeta().getCustomModelData() == item.getItemMeta().getCustomModelData();
-                }).findFirst().ifPresent(gem -> {
-                    event.setCancelled(true);
+                GemRunnable runnable = (gem) -> {
                     gem.onRightClick(event.getPlayer());
-                });
+                };
 
+                executeIfGem(item, runnable);
             }
         }
+    }
+
+
+    public boolean isGem(ItemStack item) {
+        Optional<Gem> optional = gems.stream().filter(gem -> {
+            if(gem.getAsItem().getItemMeta() == null) {
+                return false;
+            }
+            return gem.getAsItem().getItemMeta().getCustomModelData() == Objects.requireNonNull(item.getItemMeta()).getCustomModelData();
+        }).findFirst();
+
+        return optional.isPresent();
+    }
+
+    public void executePerGem(Inventory inventory, GemRunnable runnable) {
+        for(ItemStack item : inventory) {
+            if(item == null) continue;
+            executeIfGem(item, runnable);
+        }
+    }
+
+    public void executeIfGem(ItemStack item, GemRunnable runnable) {
+        if(!hasGemModelData(item)) return;
+        gems.stream().filter(gem -> {
+            if (gem.getAsItem().getItemMeta() == null) {
+                return false;
+            }
+            return gem.getAsItem().getItemMeta().getCustomModelData() == Objects.requireNonNull(item.getItemMeta()).getCustomModelData();
+        }).findFirst().ifPresent(runnable::run);
+    }
+
+    public boolean hasGemModelData(ItemStack item) {
+        if(item.getItemMeta() == null) {
+            return true;
+        }
+        return item.getItemMeta().hasCustomModelData();
     }
 
 }

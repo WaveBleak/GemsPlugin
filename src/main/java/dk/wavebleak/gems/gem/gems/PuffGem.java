@@ -1,27 +1,22 @@
 package dk.wavebleak.gems.gem.gems;
 
 import dk.wavebleak.gems.Gems;
-import dk.wavebleak.gems.gem.Gem;
 import dk.wavebleak.gems.gem.GemType;
-import dk.wavebleak.gems.utils.TickUtils;
+import dk.wavebleak.gems.gem.GemWithCooldown;
 import hm.zelha.particlesfx.particles.ParticleCloud;
-import hm.zelha.particlesfx.particles.parents.Particle;
 import hm.zelha.particlesfx.shapers.ParticleCircleFilled;
-import hm.zelha.particlesfx.shapers.ParticleCylinder;
-import hm.zelha.particlesfx.util.CircleInfo;
 import hm.zelha.particlesfx.util.LocationSafe;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 @SuppressWarnings("deprecation")
-public class PuffGem extends Gem {
+public class PuffGem extends GemWithCooldown {
 
-    private int cooldown = 0;
+    public PuffGem() {
+        super(300);
+    }
 
     @Override
     public GemType gemType() {
@@ -45,11 +40,11 @@ public class PuffGem extends Gem {
 
     @Override
     public void onRightClick(Player player) {
-        if (cooldown > 0) {
-            sendCooldownMessage(player, cooldown);
+        if(checkCooldown()) {
+            sendCooldownMessage(player);
             return;
         }
-        cooldown = 300;
+        cooldown = maxCooldown;
 
         Location location = player.getLocation();
 
@@ -89,12 +84,5 @@ public class PuffGem extends Gem {
                 }
             }
         }.runTaskTimer(Gems.instance, 3, 3);
-    }
-
-    @Override
-    public void onTick(Player player) {
-        if(cooldown > 0) {
-            cooldown--;
-        }
     }
 }

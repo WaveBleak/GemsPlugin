@@ -8,5 +8,7 @@ public enum GemType {
     WEALTH,
     FORCE,
     ICE,
-    WARDEN
+    WARDEN,
+    MAGIC,
+    DRAGON
 }

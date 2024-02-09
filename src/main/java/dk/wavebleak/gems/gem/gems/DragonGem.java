@@ -3,15 +3,15 @@ package dk.wavebleak.gems.gem.gems;
 import dk.wavebleak.gems.Gems;
 import dk.wavebleak.gems.gem.GemType;
 import dk.wavebleak.gems.gem.GemWithCooldown;
+import hm.zelha.particlesfx.particles.ParticlePortal;
 import hm.zelha.particlesfx.particles.ParticleSonicBoom;
-import org.bukkit.FluidCollisionMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import hm.zelha.particlesfx.particles.parents.Particle;
+import hm.zelha.particlesfx.shapers.ParticleLine;
+import hm.zelha.particlesfx.util.LocationSafe;
+import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
+import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
@@ -19,31 +19,31 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WardenGem extends GemWithCooldown {
-
-    public WardenGem() {
-        super(200);
+public class DragonGem extends GemWithCooldown {
+    public DragonGem() {
+        super(100);
     }
 
     @Override
     public GemType gemType() {
-        return GemType.WARDEN;
+        return GemType.DRAGON;
     }
 
     @Override
     public Material itemType() {
-        return Material.ECHO_SHARD;
+        return Material.DRAGON_BREATH;
     }
 
     @Override
     public String name() {
-        return "&3&lWarden Gem";
+        return "&d&lDragon Gem";
     }
 
     @Override
     public int modelData() {
-        return 6;
+        return 10;
     }
+
 
     @Override
     public void onRightClick(Player player) {
@@ -52,19 +52,14 @@ public class WardenGem extends GemWithCooldown {
             return;
         }
         cooldown = maxCooldown;
-
+        ParticlePortal portalParticle = new ParticlePortal();
         final float distance = 20f;
         final float stepDistance = 0.5f;
-        final float damage = 5;
 
         Location loc = player.getEyeLocation();
         Vector direction = loc.getDirection().normalize().multiply(distance);
         List<Location> steps = new ArrayList<>();
         Vector step = direction.clone().normalize().multiply(stepDistance);
-
-
-
-        ParticleSonicBoom boomParticle = new ParticleSonicBoom();
 
         float total = 0;
         Location dummy = loc.clone();
@@ -74,7 +69,7 @@ public class WardenGem extends GemWithCooldown {
             total += stepDistance;
         }
 
-
+        List<ParticleLine> lines = new ArrayList<>();
         new BukkitRunnable() {
             int i = 0;
             Location previousLoc = loc;
@@ -83,8 +78,13 @@ public class WardenGem extends GemWithCooldown {
                 try {
                     Location currentLoc = steps.get(i);
                     i++;
-                    ParticleSonicBoom clonedBoom = boomParticle.clone();
-                    clonedBoom.display(currentLoc);
+                    ParticlePortal clonedPortal = portalParticle.clone();
+
+                    ParticleLine line = new ParticleLine(clonedPortal, 5, new LocationSafe(previousLoc), new LocationSafe(loc));
+
+                    line.display();
+
+                    lines.add(line);
 
                     RayTraceResult ray = player.getWorld().rayTrace(
                             previousLoc,
@@ -104,24 +104,30 @@ public class WardenGem extends GemWithCooldown {
                     if(ray.getHitEntity() != null) {
                         Entity entity = ray.getHitEntity();
                         if(entity instanceof LivingEntity hitEntity) {
-                            hitEntity.getWorld().playSound(hitEntity.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_WOODEN_DOOR, 1, 0.1f);
-                            hitEntity.damage(damage, player);
-                            cancel();
+                            AreaEffectCloud cloud = (AreaEffectCloud) hitEntity.getWorld().spawnEntity(hitEntity.getLocation().add(0.5, 1, 0.5), EntityType.AREA_EFFECT_CLOUD);
+                            cloud.setDuration(100);
+                            cloud.setColor(Color.PURPLE);
+                            cloud.setBasePotionType(PotionType.INSTANT_DAMAGE);
+                            throw new IndexOutOfBoundsException();
                         }
                     }
                     if(ray.getHitBlock() != null) {
                         Block block = ray.getHitBlock();
 
-                        block.getWorld().createExplosion(block.getLocation(), 2);
-                        cancel();
+                        AreaEffectCloud cloud = (AreaEffectCloud) block.getWorld().spawnEntity(block.getLocation().add(0.5, 1, 0.5), EntityType.AREA_EFFECT_CLOUD);
+                        cloud.setDuration(100);
+                        cloud.setColor(Color.PURPLE);
+                        cloud.setBasePotionType(PotionType.INSTANT_DAMAGE);
+                        throw new IndexOutOfBoundsException();
                     }
 
                 }catch (IndexOutOfBoundsException e) {
-                    //previousLoc.getWorld().createExplosion(previousLoc, 2);
                     cancel();
+                    for(ParticleLine line : lines) {
+                        line.stop();
+                    }
                 }
             }
         }.runTaskTimer(Gems.instance, 1, 1);
-
     }
 }

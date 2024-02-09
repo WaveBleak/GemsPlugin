@@ -1,11 +1,9 @@
 package dk.wavebleak.gems.gem.gems;
 
 import dk.wavebleak.gems.Gems;
-import dk.wavebleak.gems.gem.Gem;
 import dk.wavebleak.gems.gem.GemType;
-import hm.zelha.particlesfx.particles.ParticleEndRod;
+import dk.wavebleak.gems.gem.GemWithCooldown;
 import hm.zelha.particlesfx.particles.ParticleFlameSoul;
-import hm.zelha.particlesfx.particles.parents.TravellingParticle;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -15,11 +13,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 import java.util.Collection;
-import java.util.List;
 
-public class ForceGem extends Gem {
+public class ForceGem extends GemWithCooldown {
 
-    private int cooldown = 0;
+    public ForceGem() {
+        super(200);
+    }
 
     @Override
     public GemType gemType() {
@@ -43,11 +42,10 @@ public class ForceGem extends Gem {
 
     @Override
     public void onRightClick(Player player) {
-        if(cooldown > 0) {
-            sendCooldownMessage(player, cooldown);
+        if(checkCooldown()) {
             return;
         }
-        cooldown = 200;
+        cooldown = maxCooldown;
 
         Location playerLocation = player.getLocation();
         player.getWorld().strikeLightning(playerLocation);
@@ -95,13 +93,6 @@ public class ForceGem extends Gem {
                     }
                 }
             }.runTaskLater(Gems.instance, 1);
-        }
-    }
-
-    @Override
-    public void onTick(Player player) {
-        if(cooldown > 0) {
-            cooldown--;
         }
     }
 }

@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'hm.zelha:particlesfx:1.20.4'
+    implementation 'hm.zelha:particlesfx:1.20.2'
     implementation 'org.reflections:reflections:0.10.2'
     compileOnly "org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT"
 }
