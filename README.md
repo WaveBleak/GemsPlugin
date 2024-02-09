@@ -33,6 +33,12 @@ When you hit someone while having the Ice Gem, it will freeze them but also give
 ### Force Gem
 When you right click with the force gem it throws everyone around you into the air except you
 
+### Dragon Gem
+Right click to fire a laser that creates the dragons breath effect on impact
+
+### Magic Gem
+Right click to teleport 5 blocks away
+
 
 ## TODO
 - Add a natural way of obtaining gems
