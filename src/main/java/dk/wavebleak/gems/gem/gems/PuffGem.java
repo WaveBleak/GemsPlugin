@@ -25,7 +25,7 @@ public class PuffGem extends GemWithCooldown {
 
     @Override
     public Material itemType() {
-        return Material.WHITE_WOOL;
+        return Material.FEATHER;
     }
 
     @Override

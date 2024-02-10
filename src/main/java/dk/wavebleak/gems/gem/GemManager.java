@@ -117,7 +117,7 @@ public class GemManager implements Listener {
     public void onRightClick(PlayerInteractEvent event) {
         switch (event.getAction()) {
             case RIGHT_CLICK_AIR, RIGHT_CLICK_BLOCK -> {
-                ItemStack item = event.getPlayer().getInventory().getItemInMainHand();
+                ItemStack item = event.getPlayer().getInventory().getItemInOffHand();
 
                 GemRunnable runnable = (gem) -> {
                     gem.onRightClick(event.getPlayer());

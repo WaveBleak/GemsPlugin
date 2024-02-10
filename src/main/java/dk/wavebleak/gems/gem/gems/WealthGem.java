@@ -20,7 +20,7 @@ public class WealthGem extends Gem {
 
     @Override
     public Material itemType() {
-        return Material.EMERALD;
+        return Material.GREEN_DYE;
     }
 
     @Override

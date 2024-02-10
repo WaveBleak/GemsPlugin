@@ -27,7 +27,7 @@ public class IceGem extends Gem {
 
     @Override
     public Material itemType() {
-        return Material.LAPIS_LAZULI;
+        return Material.BLUE_DYE;
     }
 
     @Override
