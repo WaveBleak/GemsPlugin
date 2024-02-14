@@ -1,14 +1,19 @@
 # Gems Plugin
-A gems plugin for Kyuix
+A gems plugin for Kyuix. This plugin is made for Kyuix for his SMP, it gives people gems with superpowers, some with abilities that have to be activated and others with passive benefits
 
 ## A quick demo of the plugin
 https://github.com/WaveBleak/GemsPlugin/assets/43072434/b9f74cbc-3143-47d9-a15a-aba0e1406a74
 
-
 ## The Gems
-Currently there's 4 gems, each with it's own use case, to give yourself a gem just use the `/givegem` command and follow the instructions! 
+Currently there's 10 gems, each with it's own use case, to give yourself a gem just use the `/givegem` command and follow the instructions!
 
 If a gem has an ability you must Right Click while holding it in your offhand
+<details>
+<summary><h3>
+Click to see all gems and their descriptions</h3></summary>
+
+
+
 
 ### Puff Gem
 The Puff Gem lets you get boosted into the sky to disengage combat or just for quick movement
@@ -39,14 +44,14 @@ Use it's ability to fire a laser that creates the dragons breath effect on impac
 
 ### Magic Gem
 Use it's ability to teleport 5 blocks away
-
+</details>
 
 ## TODO
 - Add a natural way of obtaining gems
 - Give gems some sort of durability or at least make them unable to last forever
-- ~~Add more gems~~
+- Update demo video
 
 ## Build requirements 
-- To build the plugin you must port [this](https://github.com/hmzel/ParticleSFX/tree/master) plugin to 1.20.2
+- To build the plugin you must locally install [this](https://github.com/hmzel/ParticleSFX/tree/master) plugin in 1.20.2
 - Requires Java 17+
 - Intellij IDEA is strongly recommended
