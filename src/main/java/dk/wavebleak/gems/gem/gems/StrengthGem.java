@@ -46,6 +46,8 @@ public class StrengthGem extends GemWithCooldown {
             return;
         }
 
+        cooldown = maxCooldown;
+
         player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 8 * 20, 1));
         player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1, 1);
 
