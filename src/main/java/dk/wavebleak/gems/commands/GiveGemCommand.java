@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 public class GiveGemCommand implements CommandExecutor{
     @Override
     public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
+        if(!sender.isOp()) return false;
         if(args.length == 0) {
             GemType[] gems = GemType.values();
 
